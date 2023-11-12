@@ -41,8 +41,8 @@ with open(os.path.join(dataset_dir, 'idx_2_label.json'), 'r') as json_file:
     idx_2_label = json.load(json_file)
 
 # define tokenizer and model
-tokenizer = RobertaTokenizer.from_pretrained("Models/finetuned_roberta_IEMOCAP")
-model = RobertaForSequenceClassification.from_pretrained("Models/finetuned_roberta_IEMOCAP", num_labels=len(idx_2_label))
+tokenizer = RobertaTokenizer.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition")
+model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
 
 # define dataset and dataloader
 batch_size = 128
