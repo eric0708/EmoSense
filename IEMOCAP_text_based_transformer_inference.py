@@ -58,22 +58,15 @@ model.eval()
 valid_loss = 0
 valid_correct_preds = 0
 with torch.no_grad():
-    for i, batch in enumerate(valid_dataloader):
-        print(f'[LOG] iteration-{i} start')
+    for batch in tqdm(valid_dataloader):
         inputs = {key: val.to(device) for key, val in batch.items()}
-        print(f'[LOG] iteration-{i} input formated')
         outputs = model(**inputs)
-        print(f'[LOG] iteration-{i} output inferenced')
         logits = outputs.logits
-        print(f'[LOG] iteration-{i} output logited')
         labels = inputs['labels'].to(device)
-        print(f'[LOG] iteration-{i} label to device')
 
         # calculate validation accuracy
         _, valid_predictions = torch.max(logits, dim=1)
-        print(f'[LOG] iteration-{i} pred maxed')
         valid_correct_preds += torch.sum(valid_predictions == labels).item()
-        print(f'[LOG] iteration-{i} preds accumulated')
 
 valid_accuracy = valid_correct_preds / len(valid_dataset)
 print(f"Valid Accuracy: {valid_accuracy:.4f}\n")
