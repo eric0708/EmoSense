@@ -58,7 +58,7 @@ model.eval()
 valid_loss = 0
 valid_correct_preds = 0
 with torch.no_grad():
-    for batch, i in enumerate(valid_dataloader):
+    for i, batch in enumerate(valid_dataloader):
         print(f'[LOG] iteration-{i} start')
         inputs = {key: val.to(device) for key, val in batch.items()}
         print(f'[LOG] iteration-{i} input formated')
