@@ -45,7 +45,7 @@ tokenizer = RobertaTokenizer.from_pretrained("eric0708/finetuned_roberta_text_em
 model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
 
 # define dataset and dataloader
-batch_size = 128
+batch_size = 4
 valid_dataset = IEMOCAP_Text_Dataset(valid_texts, valid_labels, tokenizer)
 valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
