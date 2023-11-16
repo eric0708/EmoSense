@@ -70,14 +70,15 @@ def val(model):
     valid_accuracy = valid_correct_preds / len(valid_dataset)
     print(f"Valid Accuracy: {valid_accuracy:.4f}\n")
 
-val(model)
+# val(model)
 
 import torch.nn.utils.prune as prune
 import torch.nn as nn
 def apply_pruning(module, pruning_percentage):
     for name, module in module.named_modules():
         if isinstance(module, nn.Linear):
-            prune.l1_unstructured(module, name='weight', amount=pruning_percentage)
+              prune.l1_unstructured(module, name='weight', amount=pruning_percentage)
+              prune.remove(module, name='weight')
 
 apply_pruning(model, 0.33)
 val(model)
