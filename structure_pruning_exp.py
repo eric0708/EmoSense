@@ -111,5 +111,5 @@ def apply_structure_pruning(pruning_percentage, label = ""):
               prune.remove(module, name='weight')
     val(model)
 
-for i in range(10, 20, 30, 40 ,50 ,60, 70, 80, 90):
+for i in [10, 20, 30, 40 ,50 ,60, 70, 80, 90]:
   apply_structure_pruning(i * 0.01, f'[s-{i}]')
