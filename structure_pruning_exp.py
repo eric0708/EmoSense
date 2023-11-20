@@ -42,7 +42,7 @@ with open(os.path.join(dataset_dir, 'idx_2_label.json'), 'r') as json_file:
 
 # define tokenizer and model
 tokenizer = RobertaTokenizer.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition")
-model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
+# model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
 
 # define dataset and dataloader
 batch_size = 4
@@ -71,9 +71,6 @@ def sparcity_model_overall(model, tag=""):
         for name, p in P:
             num_para += p.numel()
     print(f'{tag} sparcity: {num_zero / num_para * 100}')
-
-def release_memory():
-    torch.cuda.empty_cache()
 
 def val(model, tag=""):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -108,12 +105,13 @@ import torch.nn.utils.prune as prune
 import torch.nn as nn
 def apply_structure_pruning(pruning_percentage, label = ""):
     model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
-    release_memory()
     for name, module in model.named_modules():
         if isinstance(module, nn.Linear):
               prune.l1_unstructured(module, name='weight', amount=pruning_percentage)
               prune.remove(module, name='weight')
     val(model)
+    del model
+
 
 for i in [10, 20, 30, 40 ,50 ,60, 70, 80, 90]:
   apply_structure_pruning(i * 0.01, f'[s-{i}]')
