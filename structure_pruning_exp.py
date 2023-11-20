@@ -72,6 +72,9 @@ def sparcity_model_overall(model, tag=""):
             num_para += p.numel()
     print(f'{tag} sparcity: {num_zero / num_para * 100}')
 
+def release_memory():
+    torch.cuda.empty_cache()
+
 def val(model, tag=""):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -105,6 +108,7 @@ import torch.nn.utils.prune as prune
 import torch.nn as nn
 def apply_structure_pruning(pruning_percentage, label = ""):
     model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
+    release_memory()
     for name, module in model.named_modules():
         if isinstance(module, nn.Linear):
               prune.l1_unstructured(module, name='weight', amount=pruning_percentage)
