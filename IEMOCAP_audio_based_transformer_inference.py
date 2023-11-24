@@ -46,7 +46,8 @@ class IEMOCAP_Audio_Dataset(Dataset):
 
     def __getitem__(self, idx):
         audio_path = self.audios[idx]
-        waveform, _ = torchaudio.load(audio_path, normalize=True)
+        waveform, _ = torchaudio.load(audio_path)
+        waveform = waveform / torch.max(torch.abs(waveform))
         inputs = {"input_values": self.processor(waveform.squeeze().numpy(), return_tensors="pt", max_length=self.max_length, sampling_rate=16000).input_values[0]}
         inputs["label"] = self.labels[idx]
 
