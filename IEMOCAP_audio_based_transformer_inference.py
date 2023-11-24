@@ -117,7 +117,8 @@ with torch.no_grad():
     for batch in tqdm(valid_dataloader):
         inputs = batch['input_values'].to(device)
         labels = batch['label'].to(device)
-        outputs = model(inputs)
+        with torch.cuda.amp.autocast():
+            outputs = model(inputs)
         loss = loss_fn(outputs, labels)
         valid_loss += loss.item()
 
