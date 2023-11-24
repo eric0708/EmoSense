@@ -11,7 +11,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 from sklearn.model_selection import train_test_split
-from transformers import Wav2Vec2Processor, Wav2Vec2ConformerForCTC, RobertaTokenizer, RobertaForSequenceClassification, AdamW
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC, RobertaTokenizer, RobertaForSequenceClassification, AdamW
 
 # load label to idx dictionary
 dataset_dir = 'Dataset/IEMOCAP'
@@ -58,8 +58,8 @@ class IEMOCAP_Audio_Dataset(Dataset):
 with open(os.path.join(dataset_dir, 'idx_2_label.json'), 'r') as json_file:
     idx_2_label = json.load(json_file)
 
-processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-conformer-rope-large-960h-ft")
-model = Wav2Vec2ConformerForCTC.from_pretrained("facebook/wav2vec2-conformer-rope-large-960h-ft")
+processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
 tokenizer = RobertaTokenizer.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition")
 text_model = RobertaForSequenceClassification.from_pretrained("eric0708/finetuned_roberta_text_emotion_recognition", num_labels=len(idx_2_label))
