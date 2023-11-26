@@ -2,7 +2,6 @@
 import os
 import wget
 import json
-import numpy as np
 from tqdm import tqdm
 
 import torch
@@ -10,8 +9,8 @@ import torchaudio
 import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
-from sklearn.model_selection import train_test_split
-from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC, AdamW
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, classification_report
 
 # load label to idx dictionary
 dataset_dir = 'Dataset/IEMOCAP'
@@ -62,7 +61,9 @@ processor = Wav2Vec2Processor.from_pretrained("eric0708/finetuned_wav2vec_audio_
 model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 model_path_url = "https://huggingface.co/eric0708/finetuned_wav2vec_audio_emotion_recognition/resolve/main/model.pth"
 model_destination = "Models/model.pth"
-wget.download(model_path_url, model_destination)
+
+if not os.path.exists(model_destination):
+    wget.download(model_path_url, model_destination)
 
 # create new model to add classification head to original model 
 class Wav2VecClassifier(nn.Module):
@@ -82,7 +83,11 @@ class Wav2VecClassifier(nn.Module):
 
 num_classes = len(idx_2_label)
 model =  Wav2VecClassifier(model, num_classes)
-model.load_state_dict(torch.load(model_destination))
+
+if torch.cuda.is_available():
+    model.load_state_dict(torch.load(model_destination))
+else: 
+    model.load_state_dict(torch.load(model_destination, map_location=torch.device('cpu')))
 
 # define validation dataset
 valid_dataset = IEMOCAP_Audio_Dataset(valid_audios, valid_labels, processor)
@@ -113,6 +118,8 @@ print("Start Validation")
 model.eval()
 valid_loss = 0
 valid_correct_preds = 0
+valid_labels_list = []
+valid_predictions_list = []
 with torch.no_grad():
     for batch in tqdm(valid_dataloader):
         inputs = batch['input_values'].to(device)
@@ -126,7 +133,40 @@ with torch.no_grad():
         _, valid_predictions = torch.max(outputs, dim=1)
         valid_correct_preds += torch.sum(valid_predictions == labels).item()
 
+        valid_labels_list += labels.to("cpu").tolist()
+        valid_predictions_list += valid_predictions.to("cpu").tolist()
+
 avg_valid_loss = valid_loss / len(valid_dataloader)
 valid_accuracy = valid_correct_preds / len(valid_dataset)
 
+# Print loss and accuracy
 print(f"Valid Loss: {avg_valid_loss:.4f}, Valid Accuracy: {valid_accuracy:.4f}\n")
+
+# Print precision, recall, and F1 score for each class
+precision = precision_score(valid_labels_list, valid_predictions_list, average=None)
+recall = recall_score(valid_labels_list, valid_predictions_list, average=None)
+f1 = f1_score(valid_labels_list, valid_predictions_list, average=None)
+
+# Print precision, recall, and F1 score averaged across classes
+precision_macro = precision_score(valid_labels_list, valid_predictions_list, average='macro')
+recall_macro = recall_score(valid_labels_list, valid_predictions_list, average='macro')
+f1_macro = f1_score(valid_labels_list, valid_predictions_list, average='macro')
+
+print(f"Precision (Per Class): {precision}")
+print(f"Recall (Per Class): {recall}")
+print(f"F1 Score (Per Class): {f1}")
+
+print(f"Macro-Averaged Precision: {precision_macro:.4f}")
+print(f"Macro-Averaged Recall: {recall_macro:.4f}")
+print(f"Macro-Averaged F1 Score: {f1_macro:.4f}")
+
+# Print confusion matrix
+conf_matrix = confusion_matrix(valid_labels_list, valid_predictions_list)
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Print classification report
+class_names = [idx_2_label[str(i)] for i in range(8)]
+class_report = classification_report(valid_labels_list, valid_predictions_list, target_names=class_names)
+print("Classification Report:")
+print(class_report)
