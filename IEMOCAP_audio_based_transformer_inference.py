@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
-from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 
 # load label to idx dictionary
 dataset_dir = 'Dataset/IEMOCAP'
@@ -142,31 +142,38 @@ valid_accuracy = valid_correct_preds / len(valid_dataset)
 # Print loss and accuracy
 print(f"Valid Loss: {avg_valid_loss:.4f}, Valid Accuracy: {valid_accuracy:.4f}\n")
 
-# Print precision, recall, and F1 score for each class
-precision = precision_score(valid_labels_list, valid_predictions_list, average=None)
-recall = recall_score(valid_labels_list, valid_predictions_list, average=None)
-f1 = f1_score(valid_labels_list, valid_predictions_list, average=None)
+def validation_metrics(valid_labels_list, valid_predictions_list):
+    # Print accuracy
+    accuracy = accuracy_score(valid_labels_list, valid_predictions_list)
+    print(f"Accuracy: {accuracy:.4f}")
 
-# Print precision, recall, and F1 score averaged across classes
-precision_macro = precision_score(valid_labels_list, valid_predictions_list, average='macro')
-recall_macro = recall_score(valid_labels_list, valid_predictions_list, average='macro')
-f1_macro = f1_score(valid_labels_list, valid_predictions_list, average='macro')
+    # Print precision, recall, and F1 score for each class
+    precision = precision_score(valid_labels_list, valid_predictions_list, average=None)
+    recall = recall_score(valid_labels_list, valid_predictions_list, average=None)
+    f1 = f1_score(valid_labels_list, valid_predictions_list, average=None)
 
-print(f"Precision (Per Class): {precision}")
-print(f"Recall (Per Class): {recall}")
-print(f"F1 Score (Per Class): {f1}")
+    # Print precision, recall, and F1 score averaged across classes
+    precision_macro = precision_score(valid_labels_list, valid_predictions_list, average='macro')
+    recall_macro = recall_score(valid_labels_list, valid_predictions_list, average='macro')
+    f1_macro = f1_score(valid_labels_list, valid_predictions_list, average='macro')
 
-print(f"Macro-Averaged Precision: {precision_macro:.4f}")
-print(f"Macro-Averaged Recall: {recall_macro:.4f}")
-print(f"Macro-Averaged F1 Score: {f1_macro:.4f}")
+    print(f"Precision (Per Class): {precision}")
+    print(f"Recall (Per Class): {recall}")
+    print(f"F1 Score (Per Class): {f1}")
 
-# Print confusion matrix
-conf_matrix = confusion_matrix(valid_labels_list, valid_predictions_list)
-print("Confusion Matrix:")
-print(conf_matrix)
+    print(f"Macro-Averaged Precision: {precision_macro:.4f}")
+    print(f"Macro-Averaged Recall: {recall_macro:.4f}")
+    print(f"Macro-Averaged F1 Score: {f1_macro:.4f}")
 
-# Print classification report
-class_names = [idx_2_label[str(i)] for i in range(8)]
-class_report = classification_report(valid_labels_list, valid_predictions_list, target_names=class_names)
-print("Classification Report:")
-print(class_report)
+    # Print confusion matrix
+    conf_matrix = confusion_matrix(valid_labels_list, valid_predictions_list)
+    print("Confusion Matrix:")
+    print(conf_matrix)
+
+    # Print classification report
+    class_names = [idx_2_label[str(i)] for i in range(8)]
+    class_report = classification_report(valid_labels_list, valid_predictions_list, target_names=class_names)
+    print("Classification Report:")
+    print(class_report)
+
+validation_metrics(valid_labels_list, valid_predictions_list)
