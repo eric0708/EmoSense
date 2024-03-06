@@ -2,7 +2,7 @@
 
 😊😃🥲🤨😕
 
-Welcome to EmoSense! This repository contains code for emotion recognition using audio and text based transformer models with pruning support. 
+Welcome to EmoSense! This repository contains code for emotion recognition using audio and text based transformer models with pruning support. Presentation slides to the project can be viewed [here](https://docs.google.com/presentation/d/11L6VZKmYdf0F7yfEugzStx8l-P25POuB8DaTz-pau44/edit?usp=sharing).
 
 ## Description
 EmoSense is a powerful tool designed to recognize emotions from audio and text data. Leveraging state-of-the-art transformer models, it offers accurate predictions for a wide range of applications. EmoSense also integrates pruning support into the pipeline to test the effect of pruning on emotion recognition performance. 
