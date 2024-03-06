@@ -10,15 +10,15 @@ EmoSense is a powerful tool designed to recognize emotions from audio and text d
 ## File Structure
 
 EmoSense/  
-│  
-│── README.md  
-│── data_preprocessing.py
-│── dataset.py  
-│── inference_emotion_recognition.py  
-│── model.py 
-│── requirements.txt
-│── train_emotion_recognition.py  
-│── utils.py 
+│    
+│── README.md    
+│── data_preprocessing.py  
+│── dataset.py    
+│── inference_emotion_recognition.py    
+│── model.py   
+│── requirements.txt  
+│── train_emotion_recognition.py    
+│── utils.py   
 
 ## Contents
 - `data_preprocessing.py`: Script for preprocessing the dataset, including audio and text feature extraction along with the labels. The sample script is desgined to be used on the 'IEMOCAP' dataset and user defined datasets may have to be used in place of other datasets.
